@@ -1,0 +1,35 @@
+# Tarea No. 1
+
+## Parte I
+
+```{r}
+#Paso 1 - Construir una matriz de 5 x 5 con valores aleatorios decimales que vayan en un rango de 160 a 200. Esta
+#matriz contendrá los pesos (en libras) de varias personas.
+datos_decimales <- c((16000:20000)/100)
+datos_random <- sample(datos_decimales,25)
+peso_personas_lb <- matrix(datos_random, byrow=TRUE, nrow = 5)
+
+#Paso 2 - Asignar los meses enero a mayo como nombre de cada columna.
+meses <- c("Enero", "Febrero", "Marzo", "Abril", "Mayo")
+colnames(peso_personas_lb) <- meses
+
+#Paso 3 - Asignar 5 nombres de persona, que sean aleatorios y que se utilicen como nombre de cada fila.
+personas <- c("Esperanza", "Sabrina", "Victor", "Florencio", "Maribel")
+rownames(peso_personas_lb) <- personas
+
+#Paso 4 - Construir un vector que contenga el peso promedio de cada persona durante los meses de enero a mayo. Agregarlo a la matriz.
+peso_promedio_personas <- rowMeans(peso_personas_lb)
+peso_personas_lb_v1 <- cbind(peso_personas_lb, peso_promedio_personas)
+
+#Paso 5 - Construir un vector que contenga el peso promedio en cada mes para todas las personas. Agregarlo a la matriz.
+peso_promedio_meses <- colMeans(peso_personas_lb_v1)
+peso_personas_lb_v2 <- rbind(peso_personas_lb_v1, peso_promedio_meses)
+
+#Paso 6 - Imprimir la matriz resultante. Se decidió agregar nombre a las columnas y filas agregadas.
+nombre_columnas <- c("Esperanza", "Sabrina", "Victor", "Florencio", "Maribel", "Promedio por Persona")
+colnames(peso_personas_lb_v2) <- nombre_columnas
+nombre_filas <- c("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Promedio por Mes")
+row.names(peso_personas_lb_v2) <- nombre_filas
+print("Matriz de Peso en Lb durante Enero a Mayo")
+print(peso_personas_lb_v2)
+```
