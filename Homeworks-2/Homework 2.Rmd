@@ -1,0 +1,183 @@
+# Homework 2
+
+## Funciones en R
+
+Una función surge de la combinación de instrucciones necesarias para generar un resultado esperado. Estas son utilizadas para agrupar procedimientos que puedan ser utilizados de forma recurrente en un mismo programa, sin necesidad de copiar y pegar múltiples veces segmentos de código a través de este. Una función se identifica al presentarse la instrucción:
+
+```{r}
+funcion -> function(argumento1, argumento2){
+  #Instrucciones de la Función
+}
+```
+
+### Estructura de una función:
+
+Estas constan de tres partes fundamentales a tomar en consideración para realizar una función correctamente:
+
+1.  **Argumentos de entrada:** Son los parámetros que se ingresan a una función con la finalidad de obtener un resultado deseado. Estos pueden ser ingresados directamente por el usuario o bien, ser parámetros previamente establecidos por la función a lo que se conoce como parámetros por defecto.
+
+2.  **Cuerpo:** Se encuentra compuesto por las instrucciones a realizar una vez sean ingresados los argumentos necesarios. Estos se encargan de transformar la solicitud para obtener una respuesta satisfactoria.
+
+3.  **Salida:** Expresa un resultado final de la solicitud realizada. Esta puede desplegar únicamente un valor o bien una explicación predefinida de la respuesta y lo que representa.
+
+La estructura de una función convencional puede ser visualizada con estos parámetros como:
+
+```{r}
+nueva_funcion -> function(argumento_1){
+  Cuerpo #Instrucción 1
+  Cuerpo #Intrucción 2
+  # ...
+  Cuerpo #Intrucción n
+  return(Salida)
+}
+```
+
+### Ejemplo de una función:
+
+A continuación se plantea la resolución de una función capaz de transformar una cantidad de kilómetros a millas:
+
+```{r}
+km_2_mi <- function(arg1){                                                      #arg1 -> cantidad de km
+  if(arg1>=0){
+    millas <- arg1/1.609;                                                       #Cálculo de km a mi
+    print(paste(arg1, "km representa", round(millas, 4), "mi"))                 #Salida correcta
+  } else{
+    print("No es posible tener una distancia negativa")                         #Salida errónea
+  }
+}
+
+km_2_mi(6.4)
+```
+
+### Argumento por valor
+
+Existe la posibilidad de crear una función en la cual los argumentos que se ingresen pueden variar de cantidad. Utilizando el argumento ... o argumento tres puntos, es posible que la función tome todos los valores que sean ingresados como argumento sin necesidad de definir una cantidad fija de argumentos que tengan que ser ingresados para que esta funcione.
+
+```{r}
+funcion_contar <- function(...){
+  contar <- c(...)
+  resultado <- length(contar)
+  print(resultado)
+}
+
+funcion_contar(3:8)
+funcion_contar(1,2,5)
+funcion_contar("pizza", "pelota", "pera", "paraguas")
+```
+
+
+## Familia Apply
+
+### Función apply()
+
+La función apply nos permite tomar los valores presentes en una matriz o un data frame, y aplicarlos en una función de R. Esto mediante la conversión de dicha matriz o data frame a un vector, el cual se introduce a la función como una cadena de argumentos a utilizar para obtener un resultado.
+
+Esta función consiste en 3 parámetros:
+
+```{r}
+funcion_apply <- apply(x, MARGIN = a, FUN = b)
+```
+
+Donde:
+
+-   **x** = La matriz o arreglo a ser transformado.
+
+-   **MARGIN** = Define la forma de manipular la matriz, esta puede portar un rango de número entre 1 y 2.
+
+    -   En el caso sea **MARGIN = 1**, la manipulación de la matriz se realiza en en las filas.
+
+    -   En el caso sea **MARGIN = 2**, la manipulación de la matriz se realiza en las columnas.
+
+    -   En el caso sea **MARGIN = c(1,2)**, la manipulación de la matriz se realiza en las filas y las columnas.
+
+-   **FUN** = Indica la función a aplicar en la matriz.
+
+#### Ejemplo:
+
+```{r}
+matriz <- matrix(c<-(1:9), nrow = 3)
+print(matriz)
+
+apply_matriz <- apply(matriz, 1, mean)
+print(paste(c("La media por fila de la matriz es", apply_matriz), collapse = " "))
+```
+
+### Función lapply()
+
+La función lapply es utilizada para poder aplicar una función en una lista de objetos, con la finalidad de poder aplicar la función a cada elemento de la lista. A diferencia de la función apply, esta no necesita el argumento MARGIN para realizar su función, debido a la naturaleza de una lista.
+
+La sintaxis de la función lapply es:
+
+```{r}
+funcion_lapply <- lapply(x, FUN = a)
+```
+
+Donde:
+
+-   **x** = La lista a ser operada por la función.
+
+-   **FUN** = Indica la función a aplicar en la lista.
+
+#### Ejemplo:
+
+```{r}
+lista <- c("A", "B", "C", "D", "E")
+print(lista)
+
+lista_minuscula <- lapply(lista, tolower)
+print(lista_minuscula)
+```
+
+### Función sapply()
+
+La función sapply nos permite utilizar una lista, vector o data frames como argumento de una función y devuelve una respuesta en forma de vector o matriz. Utiliza una sintaxis similar a la función lapply, pero devuelve un vector en lugar de obtener cada elemento por separado.
+
+La sintaxis de la función lapply es:
+
+```{r}
+funcion_sapply <- sapply(x, FUN = a)
+```
+
+Donde:
+
+-   **x** = La lista a ser operada por la función.
+
+-   **FUN** = Indica la función a aplicar en la lista.
+
+#### Ejemplo:
+
+```{r}
+lista <- c("A", "B", "C", "D", "E")
+print(lista)
+
+lista_minuscula <- sapply(lista, tolower)
+print(lista_minuscula)
+```
+
+### Función vapply()
+
+La función vapply nos permite utilizar un vector o lista en una función y se obtiene como resultado un vector resumen, con el resultado de la función realizada a través de los elementos de la lista.
+
+La sintaxis de la función vapply es:
+
+```{r}
+funcion_vapply <- vapply(x, FUN = a, FUN.VALUE = 1)
+```
+
+Donde:
+
+-   **x** = La lista a ser operada por la función.
+
+-   **FUN** = Indica la función a aplicar en la lista.
+
+-   **FUN.VALUE** = Indica el tipo de dato específico que se espera en la función.
+
+#### Ejemplo:
+
+```{r}
+lista <- list(A=3:6, B=matriz)
+print(lista)
+
+lista_sumatoria <- vapply(lista, sum, FUN.VALUE = 1)
+print(lista_sumatoria)
+```
