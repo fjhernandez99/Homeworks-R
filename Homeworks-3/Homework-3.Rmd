@@ -1,0 +1,80 @@
+# Homework 3
+
+## Leer un Archivo CSV desde R
+
+Para poder leer un archivo CSV en R y poder analizar los datos presentes en este, se emplea la función read.csv. Esta función se encarga de transformar una base de datos externa en un dataframe en r. La sintaxis de la función read.csv es:
+
+```{r}
+read.csv(
+  file = "Nombre_del_archivo.csv", # Nombre o dirección del archivo csv
+  sep = ",",                       # Separador de los valores
+  quote = "\"",                    # Caracter de citaciones
+  dec = ".",                       # Punto decimal
+  fill = TRUE,                     # Rellenar celdas vacías (TRUE) o no (FALSE)
+  comment.char = "",               # Carácter de los comentarios o cadenas vacías
+  encoding = "unknown")            # Decodicación de ser necesaria  
+```
+
+## Función select()
+
+La función select() es una función parte de la librería dplyr la cual nos permite visualizar solo las columnas definidas por los parámetros indicados. La función permite ver las columnas conociendo su nombre exacto, la posición en la que se encuentran en el dataframe, las primeras o las últimas letras que pueden poseer su nombre, si contiene alguna letra en específico su nombre o si esta posee solo números o caracteres. La sintaxis de la función select() es:
+
+```{r}
+library(dplyr)
+
+df %>%
+  select(2:3) %>%              # Por posición de la columna
+  select("col1", "col2") %>%   # Por nombre de la columna
+  select(starts_with("a")) %>% # El nombre que empieza con ...
+  select(ends_with("a")) %>%   # El nombre  que termina con ...
+  select(contains("a")) %>%    # El nombre contiene ...
+  select_if(is.numeric)        # La columna continene solo números.
+```
+
+## Lectura de dataset
+
+```{r}
+dataset_results <- read.csv(
+  file = "primary_results.csv", # Nombre del archivo csv
+  sep = ",",                    # Separador de los valores
+  quote = "\"",                 # Caracter de citaciones
+  dec = ".",                    # Punto decimal
+  fill = TRUE,                  # Rellenar celdas vacías (TRUE) o no (FALSE)
+  comment.char = "",            # Carácter de los comentarios o cadenas vacías
+  encoding = "unknown")         # Decodicación de ser necesaria   
+
+dataset_results
+```
+
+## Ejercicios:
+
+```{r}
+library(dplyr)
+
+#1
+dataset_results %>%
+  filter(state=="Florida")
+
+#2
+#2.1
+dataset_results %>%
+  filter(candidate == "Hillary Clinton" & candidate == "Donald Trump")
+#2.2
+dataset_results %>%
+  filter(party == "Democrat" & county == "Shelby")
+#2.3
+dataset_results %>%
+  filter(state == "Alabama" & votes > 15000)
+
+#3
+dataset_results %>%
+  filter(state == "Texas" & county == "Denton") %>%
+  select(c("party", "candidate", "votes")) %>%
+  arrange(desc(votes))
+
+#4
+dataset_results %>%
+  filter(party == "Republican" & candidate == "Ted Cruz" & state == "Alaska") %>%
+  mutate(vote_count = votes/fraction_votes) %>%
+  arrange(desc(vote_count))
+```
