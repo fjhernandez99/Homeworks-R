@@ -1,0 +1,98 @@
+# Homework 5
+
+Se utilizan 4 de los conjuntos de datos más comunes utilizados por usuarios en la plataforma Stack Overflow:
+
+-   **questions.csv**: Posee un identificador de pregunta, la puntuación de la pregunta en función de cuántas veces se ha votado a favor de la misma; los datos solo incluyen preguntas basadas en R.
+
+-   **answers.csv**: Posee un identificador de respuesta, la puntuación y un ID que relaciona la respuesta con una pregunta específica.
+
+-   **tags.csv**: Posee un identificador de etiqueta y el nombre de la etiqueta, que se pueden utilizar para identificar el tema de cada pregunta, como ggplot2 o dplyr.
+
+-   **question_tags.csv**: Posee un identificador de etiqueta para cada pregunta y el ID de la pregunta.
+
+```{r}
+library(tidyverse)
+library(dplyr)
+
+questions <- read.csv("questions.csv")
+print(questions)
+
+answers <- read.csv("answers.csv")
+print(answers)
+
+tags <- read.csv("tags.csv")
+print(tags)
+
+question_tags <- read.csv("question_tags.csv")
+print(question_tags)
+```
+
+1.  **Left-joining questions and tags**
+
+Usando *left_joins* se relacionan los datasets *questions* y *question_tags* mediante las columnas *id* y *question_id*. Además se agrega una relación más para la tabla *tags*. Usando *replace_na* se cambian los NA en la columna *tag_name* a "only-r". Este proceso se almacena en una variable llamada *questions_with_tags*.
+
+```{r}
+questions_with_tags <- questions %>%
+  left_join(question_tags, by = c("id" = "question_id")) %>%
+  left_join(tags, by = c("tag_id" = "id"))
+
+questions_with_tags$tag_name <- replace_na(questions_with_tags$tag_name, "only-r")
+
+print(questions_with_tags)
+```
+
+2.  **Comparing scores across tags**
+
+A partir de la variable *questions_with_tags* se realiza un breve análisis con las funciones: *group_by*, para la variable *tag_name*; *summarize* para obtener el score promedio de cada pregunta asignada y con nombre *mean_score*; y *arrange*, para ordenar *mean_score* de forma ascendente.
+
+```{r}
+questions_with_tags %>%
+  group_by(tag_name) %>%
+  summarise(mean_score = mean(score)) %>%
+  arrange(desc(mean_score))
+```
+
+3.  **Findings gaps between questions and answers**
+
+Utilizando *inner_join* se combinan las tablas *questions* y *answers*, y se les aplican los sufijos "_question" y "_answer" respectivamente. Con la ayuda de la función *mutate* se crea una columna llamada *gap* que contiene la resta entre las columnas *creation_date_answer* y *creation_date_question*.
+
+
+```{r}
+questions %>%
+  inner_join(answers, by = c("id"="question_id"), suffix=c("_question", "_answer")) %>%
+  mutate(gap=as.Date(creation_date_answer)-as.Date(creation_date_question))
+```
+
+
+4.  **Joining question and answers counts**
+
+Se cuenta y ordena la columna *question_id* en la tabla *answers* y se almacena el resultado en la variable *answer_counts*. Se relaciona la tabla *questions* con *answer_counts* utilizando *left_join*. Se reemplazan los valores NA en la columna n con ceros (0). Al finaizar, se almcenan los resultados en la variable *question_answer_counts*.
+
+```{r}
+answer_counts <- answers %>%
+  count(question_id) %>%
+  arrange(desc(question_id))
+
+print(answer_counts)
+
+question_answer_counts <- questions %>%
+  left_join(answer_counts, by = c("id" = "question_id"))
+
+question_answer_counts$n <- replace_na(question_answer_counts$n, 0)
+
+print(question_answer_counts)
+```
+
+
+5.  **Joining questions, answers, and tags**
+
+Se combinan *question_tags* con *question_answer_count* usando *inner_join*. Después, se utiliza un *inner_join* para agregar la tabla *tags*. El resultado genera los temás de R que generan más interés en Stack Overflow.
+
+```{r}
+Stack_Overflow <- question_tags %>%
+  inner_join(question_answer_counts, by = c("question_id" = "id")) %>%
+  inner_join(tags, by = c("question_id"="id"))
+
+print(Stack_Overflow)
+```
+
